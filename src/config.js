@@ -5,6 +5,8 @@ export const WISH_CONFIG = {
   age: 25,
   avatar: "/photos/img_01.jpeg", // Hero Star Avatar Portrait
   intro: "Someone special has a surprise for you…",
+  // Background Music: place your audio file in the public/ folder as music.mp3 (e.g. "/music.mp3")
+  music: "/music.mp3",
 
   // 1. Core Memories Gallery & Reel (Photos + Videos)
   // Displayed right after the gift box opens

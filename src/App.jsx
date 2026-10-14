@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { WISH_CONFIG } from "./config";
 import { initConfetti, burst, rain, triggerFireworks } from "./utils/confetti";
-import { playBirthdayTune } from "./utils/audio";
+import { toggleBackgroundMusic, startBackgroundMusic, duckMusic } from "./utils/audio";
 
 export default function App() {
   const [wish] = useState(() => {
@@ -36,6 +36,9 @@ export default function App() {
   // Stage 3: Cake & Candles
   const CANDLE_COUNT = 5;
   const [extinguishedCandles, setExtinguishedCandles] = useState([]);
+  const extinguishedCandlesRef = useRef([]);
+  extinguishedCandlesRef.current = extinguishedCandles;
+  const micStreamRef = useRef(null);
   const [activeCakePhoto, setActiveCakePhoto] = useState(null);
   const [isListeningMic, setIsListeningMic] = useState(false);
   const [micStatusText, setMicStatusText] = useState("🎤 Blow into the mic");
@@ -108,6 +111,10 @@ export default function App() {
   const handleGiftClick = () => {
     if (giftOpen) return;
     setGiftShaking(true);
+    // Start continuous background music for the whole website journey
+    if (!isPlayingMusic) {
+      startBackgroundMusic(wish.music, setIsPlayingMusic);
+    }
     setTimeout(() => {
       setGiftShaking(false);
       setGiftOpen(true);
@@ -116,29 +123,63 @@ export default function App() {
     setTimeout(() => goToStage(1), 1600);
   };
 
+  // Automatic volume ducking when other sounds or videos are playing
+  useEffect(() => {
+    const isLightboxVideo = lightboxIndex !== null && activeMediaList[lightboxIndex]?.type === "video";
+    const isScratchVideo = stage === 6 && scratchRevealed && wish.surpriseMedia?.type === "video";
+    const isMicActive = isListeningMic;
+
+    if (isLightboxVideo || isScratchVideo || isMicActive) {
+      duckMusic(true);
+    } else {
+      duckMusic(false);
+    }
+  }, [lightboxIndex, activeMediaList, stage, scratchRevealed, isListeningMic, wish.surpriseMedia]);
+
+  // Stop mic on stage navigation
+  useEffect(() => {
+    if (stage !== 3 && micStreamRef.current) {
+      micStreamRef.current.getTracks().forEach((t) => t.stop());
+      micStreamRef.current = null;
+      setIsListeningMic(false);
+    }
+  }, [stage]);
+
   // Candle Extinguish -> Reveals celebration photo!
   const blowCandle = (idx) => {
-    if (extinguishedCandles.includes(idx)) return;
-    const next = [...extinguishedCandles, idx];
-    setExtinguishedCandles(next);
-    if (navigator.vibrate) navigator.vibrate(30);
+    setExtinguishedCandles((prev) => {
+      if (prev.includes(idx)) return prev;
+      const next = [...prev, idx];
+      extinguishedCandlesRef.current = next;
 
-    // Show candle milestone photo
-    if (wish.cakePhotos && wish.cakePhotos[idx]) {
-      setActiveCakePhoto(wish.cakePhotos[idx]);
-    }
+      if (navigator.vibrate) navigator.vibrate(30);
 
-    if (next.length === CANDLE_COUNT) {
-      burst(window.innerWidth / 2, window.innerHeight * 0.4, 200, 12);
-      rain(120);
-      if (!isPlayingMusic) playBirthdayTune(setIsPlayingMusic);
-    }
+      // Show candle milestone photo
+      if (wish.cakePhotos && wish.cakePhotos[idx]) {
+        setActiveCakePhoto(wish.cakePhotos[idx]);
+      }
+
+      if (next.length === CANDLE_COUNT) {
+        burst(window.innerWidth / 2, window.innerHeight * 0.4, 200, 12);
+        rain(120);
+        if (!isPlayingMusic) startBackgroundMusic(wish.music, setIsPlayingMusic);
+        if (micStreamRef.current) {
+          micStreamRef.current.getTracks().forEach((t) => t.stop());
+          micStreamRef.current = null;
+          setIsListeningMic(false);
+          setMicStatusText("✨ All candles blown!");
+        }
+      }
+      return next;
+    });
   };
 
   // Microphone Listener
   const startMic = async () => {
+    if (isListeningMic) return;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      micStreamRef.current = stream;
       const ac = new (window.AudioContext || window.webkitAudioContext)();
       const src = ac.createMediaStreamSource(stream);
       const an = ac.createAnalyser();
@@ -148,24 +189,52 @@ export default function App() {
       setIsListeningMic(true);
       setMicStatusText("🎤 Listening… blow!");
 
+      let isBlowingSequence = false;
+
       const check = () => {
-        if (extinguishedCandles.length >= CANDLE_COUNT) {
+        if (!micStreamRef.current || extinguishedCandlesRef.current.length >= CANDLE_COUNT) {
           stream.getTracks().forEach((t) => t.stop());
-          ac.close();
+          micStreamRef.current = null;
+          try { ac.close(); } catch {}
+          setIsListeningMic(false);
+          setMicStatusText("✨ All candles blown!");
           return;
         }
+
         an.getByteTimeDomainData(buf);
         let peak = 0;
-        for (const v of buf) peak = Math.max(peak, Math.abs(v - 128));
-        if (peak > 60) {
+        for (const v of buf) {
+          peak = Math.max(peak, Math.abs(v - 128));
+        }
+
+        // Blow detection threshold
+        if (peak > 38 && !isBlowingSequence) {
+          const current = extinguishedCandlesRef.current;
+          const unlit = [];
           for (let i = 0; i < CANDLE_COUNT; i++) {
-            if (!extinguishedCandles.includes(i)) {
-              blowCandle(i);
-              break;
+            if (!current.includes(i)) unlit.push(i);
+          }
+
+          if (unlit.length > 0) {
+            if (peak > 65) {
+              // Strong "boo" blow: extinguish all remaining candles in rapid cascading succession
+              isBlowingSequence = true;
+              unlit.forEach((candleIdx, offset) => {
+                setTimeout(() => {
+                  blowCandle(candleIdx);
+                  if (offset === unlit.length - 1) {
+                    isBlowingSequence = false;
+                  }
+                }, offset * 130);
+              });
+            } else {
+              // Gentle puff: extinguish next candle
+              blowCandle(unlit[0]);
             }
           }
         }
-        setTimeout(check, 220);
+
+        setTimeout(check, 150);
       };
       check();
     } catch {
@@ -306,10 +375,10 @@ export default function App() {
         </div>
         <button
           className={`icon-btn ${isPlayingMusic ? "playing" : ""}`}
-          onClick={() => playBirthdayTune(setIsPlayingMusic)}
-          aria-label="Play birthday tune"
+          onClick={() => toggleBackgroundMusic(wish.music, setIsPlayingMusic)}
+          aria-label={isPlayingMusic ? "Mute music" : "Play music"}
         >
-          🎵
+          {isPlayingMusic ? "🎵" : "🔇"}
         </button>
       </header>
 
@@ -660,13 +729,13 @@ export default function App() {
                   controls
                   autoPlay
                   playsInline
-                  style={{ width: "100%", height: "100%", maxHeight: "78vh", objectFit: "contain" }}
+                  style={{ maxWidth: "100%", maxHeight: "75vh", width: "auto", height: "auto", objectFit: "contain" }}
                 />
               ) : (
                 <img
                   src={activeMediaList[lightboxIndex].src || activeMediaList[lightboxIndex]}
                   alt={activeMediaList[lightboxIndex].title || "Memory"}
-                  style={{ width: "100%", height: "100%", maxHeight: "78vh", objectFit: "contain" }}
+                  style={{ maxWidth: "100%", maxHeight: "75vh", width: "auto", height: "auto", objectFit: "contain" }}
                 />
               )}
             </div>
