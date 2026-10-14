@@ -25,7 +25,10 @@ export const WISH_CONFIG = {
     { type: "video", src: "/photos/video_06.mp4", title: "Behind The Scenes 🎬", text: "Unfiltered smiles and real happiness.", date: "Raw Moments" },
     { type: "image", src: "/photos/img_08.jpeg", title: "Best Days ☀️", text: "Days that we will talk about for years to come.", date: "Unreal" },
     { type: "video", src: "/photos/video_07.mp4", title: "Vibe Check Passed ✨", text: "Nothing but good energy and smiles.", date: "Favorite" },
-    { type: "image", src: "/photos/img_09.jpeg", title: "Quiet & Peaceful 🕊️", text: "Moments of peace, connection and calm.", date: "Serene" }
+    { type: "image", src: "/photos/img_09.jpeg", title: "Quiet & Peaceful 🕊️", text: "Moments of peace, connection and calm.", date: "Serene" },
+    { type: "image", src: "/photos/img_30.JPG", title: "Golden Memories 💛", text: "Treasured moments that always bring a warm smile.", date: "Cherished" },
+    { type: "image", src: "/photos/img_31.JPG", title: "Pure Radiance ✨", text: "Your energy and warmth light up everywhere you go.", date: "Shining Bright" },
+    { type: "image", src: "/photos/img_34.JPG", title: "Timeless Moments 📸", text: "Memories that remain unforgettable forever.", date: "Best Times" }
   ],
 
   // 2. Birthday Cake Moments: Revealed with each candle blown (5 photos)
@@ -76,5 +79,12 @@ export const WISH_CONFIG = {
     "/photos/img_27.jpeg",
     "/photos/img_28.jpeg",
     "/photos/img_29.jpeg"
+  ],
+  finaleCutouts: [
+    "/photos/img_25_cutout.png",
+    "/photos/img_26_cutout.png",
+    "/photos/img_27_cutout.png",
+    "/photos/img_28_cutout.png",
+    "/photos/img_29_cutout.png"
   ]
 };

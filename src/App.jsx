@@ -55,6 +55,18 @@ export default function App() {
   const scratchCanvasRef = useRef(null);
   const [scratchRevealed, setScratchRevealed] = useState(false);
 
+  // Stage 7: Finale background memory playback state
+  const [finaleSlide, setFinaleSlide] = useState(0);
+
+  useEffect(() => {
+    if (stage !== 7) return;
+    const count = wish.finaleCutouts?.length || wish.finaleStream?.length || 5;
+    const interval = setInterval(() => {
+      setFinaleSlide((prev) => (prev + 1) % count);
+    }, 4500);
+    return () => clearInterval(interval);
+  }, [stage, wish.finaleCutouts, wish.finaleStream]);
+
   // Init confetti
   useEffect(() => {
     if (confettiCanvasRef.current) {
@@ -263,20 +275,23 @@ export default function App() {
   useEffect(() => {
     if (stage === 6 && scratchCanvasRef.current) {
       const c = scratchCanvasRef.current;
-      const box = c.parentElement.getBoundingClientRect();
+      const parent = c.parentElement;
+      const box = parent.getBoundingClientRect();
       const ctx = c.getContext("2d");
-      c.width = box.width;
-      c.height = box.height;
+      const w = Math.round(box.width || parent.clientWidth || 340);
+      const h = Math.round(box.height || parent.clientHeight || 210);
+      c.width = w;
+      c.height = h;
 
       const g = ctx.createLinearGradient(0, 0, c.width, c.height);
-      g.addColorStop(0, "#9aa0b4");
-      g.addColorStop(0.5, "#d7dbea");
-      g.addColorStop(1, "#8b91a8");
+      g.addColorStop(0, "#8e95ac");
+      g.addColorStop(0.5, "#dce0ec");
+      g.addColorStop(1, "#7d849b");
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, c.width, c.height);
 
-      ctx.fillStyle = "rgba(40,30,60,.55)";
-      ctx.font = "600 18px Poppins,sans-serif";
+      ctx.fillStyle = "#1e1035";
+      ctx.font = "bold 18px 'Poppins', sans-serif";
       ctx.textAlign = "center";
       ctx.fillText("✨ SCRATCH HERE ✨", c.width / 2, c.height / 2 + 6);
 
@@ -444,13 +459,10 @@ export default function App() {
           </button>
         </section>
 
-        {/* 3. HERO (Avatar + Title) */}
+        {/* 3. HERO (Title & Celebration) */}
         <section className={`stage ${stage === 2 ? "active" : ""}`} id="s-hero">
-          <div className="avatar-wrap">
-            <div className="avatar-ring">
-              <img src={wish.avatar} alt={wish.name} loading="lazy" decoding="async" />
-            </div>
-            <div className="avatar-sparkles">✨</div>
+          <div className="stage-bg-cutout hero-cutout">
+            <img src="/photos/img_32.PNG" alt="Thamil" loading="lazy" decoding="async" />
           </div>
           <p className="muted">Today is all about</p>
           <h1 className="script">{wish.name}</h1>
@@ -468,6 +480,9 @@ export default function App() {
 
         {/* 4. CAKE & CANDLE CANDID UNLOCKS */}
         <section className={`stage ${stage === 3 ? "active" : ""}`} id="s-cake">
+          <div className="stage-bg-cutout cake-cutout">
+            <img src="/photos/img_33.PNG" alt="" loading="lazy" decoding="async" />
+          </div>
           <h2>Make a wish 🌠</h2>
           <p className="muted">Close your eyes, then blow the candles — or tap each flame</p>
 
@@ -582,6 +597,9 @@ export default function App() {
 
         {/* 6. LOVE LETTER WITH SCRAPBOOK POLAROIDS */}
         <section className={`stage ${stage === 5 ? "active" : ""}`} id="s-letter">
+          <div className="stage-bg-cutout letter-cutout">
+            <img src="/photos/remove1.png" alt="" loading="lazy" decoding="async" />
+          </div>
           <div className="letter-stage-wrap">
             <div className="paper">
               <h3 className="script">Dear {wish.name},</h3>
@@ -631,11 +649,23 @@ export default function App() {
               ) : (
                 <img src={wish.surpriseMedia.src} alt="Surprise" loading="lazy" />
               )}
-              <div className="prize-badge">{wish.surpriseMedia.title} — {wish.surpriseMedia.text}</div>
+              <div className="prize-badge">
+                <b>{wish.surpriseMedia.title}</b>
+                <span>{wish.surpriseMedia.text}</span>
+              </div>
             </div>
             <canvas id="scratchCanvas" ref={scratchCanvasRef}></canvas>
           </div>
-          <p className="hint">Use your finger or mouse to scratch</p>
+
+          {scratchRevealed ? (
+            <div className="scratch-revealed-banner">
+              <div className="scratch-revealed-title">{wish.surpriseMedia.title}</div>
+              <div className="scratch-revealed-text">{wish.surpriseMedia.text}</div>
+            </div>
+          ) : (
+            <p className="hint">Use your finger or mouse to scratch ✨</p>
+          )}
+
           {scratchRevealed && (
             <button className="btn next" onClick={() => goToStage(7)}>
               Finish ✨
@@ -643,33 +673,35 @@ export default function App() {
           )}
         </section>
 
-        {/* 8. FINALE WITH FLOATING MEMORY STREAM */}
+        {/* 8. FINALE WITH FULL-SCREEN CUTOUT BACKGROUND */}
         <section className={`stage ${stage === 7 ? "active" : ""}`} id="s-finale">
-          <h1 className="script big">Happy Birthday, {wish.name}!</h1>
-          <p className="muted">With love, {wish.from} 💛</p>
-
-          {/* Floating memory bubbles drifting with celebration */}
-          <div className="finale-stream">
-            {wish.finaleStream.map((p, idx) => (
-              <div
+          {/* Full Screen Ambient Cutout Background */}
+          <div className="stage-bg-cutout finale-bg-cover">
+            {(wish.finaleCutouts || wish.finaleStream).map((src, idx) => (
+              <img
                 key={idx}
-                className="stream-bubble"
-                style={{ animationDelay: `${idx * 0.4}s` }}
-                onClick={() => openMediaModal(wish.finaleStream.map(src => ({ type: "image", src, title: "Forever Moments ✨", text: "Memories that stay forever bright." })), idx)}
-                title="Tap to view memory"
-              >
-                <img src={p} alt="Finale stream" loading="lazy" decoding="async" />
-              </div>
+                src={src}
+                alt="Cutout Backdrop"
+                className={`finale-bg-img ${idx === finaleSlide ? "active" : ""}`}
+                loading="lazy"
+                decoding="async"
+              />
             ))}
+            <div className="finale-bg-overlay" />
           </div>
 
-          <div className="row">
-            <button className="btn" onClick={triggerFireworks}>
-              🎆 More fireworks
-            </button>
-            <button className="btn ghost" onClick={() => goToStage(0)}>
-              ↺ Replay
-            </button>
+          <div className="finale-content">
+            <h1 className="script big">Happy Birthday, {wish.name}!</h1>
+            <p className="muted">With love, {wish.from} 💛</p>
+
+            <div className="row">
+              <button className="btn" onClick={triggerFireworks}>
+                🎆 More fireworks
+              </button>
+              <button className="btn ghost" onClick={() => goToStage(0)}>
+                ↺ Replay
+              </button>
+            </div>
           </div>
         </section>
       </main>

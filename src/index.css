@@ -286,7 +286,10 @@ h2{font-size:clamp(1.3rem,5vw,2rem);font-weight:600;line-height:1.3}
 .paper .sign{text-align:right;margin-top:12px;font-size:1.3rem;color:#b4306a}
 
 /* SCRATCH */
-.scratch{position:relative;width:min(320px,86vw);height:170px;border-radius:18px;overflow:hidden;box-shadow:0 12px 36px rgba(0,0,0,.4)}
+.scratch{
+  position:relative;width:min(340px,88vw);height:210px;border-radius:18px;overflow:hidden;
+  box-shadow:0 12px 36px rgba(0,0,0,.45);border:2px solid rgba(255,209,102,.35);
+}
 #scratchCanvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair;z-index:3}
 .cake-photo-popup{
   display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.12);
@@ -370,22 +373,225 @@ h2{font-size:clamp(1.3rem,5vw,2rem);font-weight:600;line-height:1.3}
 }
 .prize-badge{
   position:absolute;bottom:8px;left:50%;transform:translateX(-50%);
-  background:rgba(0,0,0,.75);color:#fff;padding:6px 14px;border-radius:999px;
-  font-size:.8rem;white-space:nowrap;backdrop-filter:blur(6px);border:1px solid var(--line);
+  width:calc(100% - 20px);max-width:300px;background:rgba(15,8,30,.88);
+  color:#fff;padding:6px 12px;border-radius:12px;
+  font-size:.82rem;line-height:1.35;text-align:center;
+  backdrop-filter:blur(6px);border:1px solid rgba(255,209,102,.45);
+  box-shadow:0 4px 14px rgba(0,0,0,.6);z-index:2;
+}
+.prize-badge b{color:var(--gold);display:block;margin-bottom:2px;font-size:.85rem}
+
+.scratch-revealed-banner{
+  margin-top:14px;max-width:min(420px,90vw);width:100%;padding:14px 18px;
+  background:linear-gradient(135deg,rgba(255,209,102,.14),rgba(255,95,162,.18));
+  border:1.5px solid var(--gold);border-radius:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,.5),0 0 24px rgba(255,209,102,.3);
+  animation:pop .45s cubic-bezier(.34,1.56,.64,1) both;text-align:center;
+}
+.scratch-revealed-title{
+  color:var(--gold);font-weight:600;font-size:1.15rem;margin-bottom:6px;
+  text-shadow:0 0 12px rgba(255,209,102,.4);
+}
+.scratch-revealed-text{
+  color:#fff;font-size:1rem;line-height:1.5;font-weight:400;opacity:.95;
 }
 
-/* FINALE FLOATING MEMORY STREAM */
-.finale-stream{
-  display:flex;gap:14px;justify-content:center;flex-wrap:wrap;
-  margin:12px 0 16px;max-width:560px;
-}
-.stream-bubble{
-  position:relative;width:68px;height:68px;border-radius:50%;overflow:hidden;
-  border:2.5px solid var(--gold);box-shadow:0 0 18px rgba(255,209,102,.4),0 8px 20px rgba(0,0,0,.4);
-  animation:bob 3s infinite ease-in-out alternate;cursor:pointer;transition:transform .3s;
-}
-.stream-bubble:hover{transform:scale(1.2) translateY(-4px)}
-.stream-bubble img{width:100%;height:100%;object-fit:cover;display:block}
-
+/* FINALE MEMORY DECK & AMBIENT PLAYBACK */
 @media (max-height:640px){.cake{transform:scale(.8);margin:-20px 0}}
 @media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
+
+/* BACKGROUND CUTOUTS FOR THE THREE RELEVANT SCREENS - FULL SCREEN COVER */
+.stage > *:not(.stage-bg-cutout){
+  position:relative;
+  z-index:2;
+}
+
+.stage-bg-cutout{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  user-select:none;
+  z-index:1;
+  overflow:hidden;
+}
+
+.stage-bg-cutout::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:2;
+}
+
+.stage-bg-cutout img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  z-index:1;
+  animation:bgCoverPulse 16s ease-in-out infinite alternate;
+  will-change:transform;
+}
+
+@keyframes bgCoverPulse{
+  0%{transform:scale(1)}
+  100%{transform:scale(1.04)}
+}
+
+/* Screen 1: Hero Stage (Stage 2) - Full Screen Cover */
+#s-hero{
+  justify-content:flex-end;
+  padding-bottom:max(44px, calc(36px + env(safe-area-inset-bottom, 0px)));
+  padding-top:max(24px, calc(20px + env(safe-area-inset-top, 0px)));
+}
+#s-hero .muted,
+#s-hero h1,
+#s-hero h2,
+#s-hero .age{
+  text-shadow:0 2px 16px rgba(0,0,0,.9),0 0 30px rgba(0,0,0,.8);
+}
+.hero-cutout img{
+  object-position:center top;
+  opacity:0.78;
+  filter:contrast(1.08) brightness(0.95);
+}
+.hero-cutout::after{
+  background:linear-gradient(
+    to bottom,
+    rgba(14,8,22,.15) 0%,
+    rgba(14,8,22,.35) 45%,
+    rgba(12,6,20,.85) 85%,
+    rgba(12,6,20,.95) 100%
+  );
+}
+
+/* Screen 2: Cake Stage (Stage 3) - Full Screen Cover */
+#s-cake h2,
+#s-cake .muted,
+#s-cake .hint{
+  text-shadow:0 2px 14px rgba(0,0,0,.9),0 0 24px rgba(0,0,0,.8);
+}
+.cake-cutout img{
+  object-position:center top;
+  opacity:0.72;
+  filter:contrast(1.08) brightness(0.92);
+}
+.cake-cutout::after{
+  background:radial-gradient(
+    circle at center 35%,
+    rgba(14,8,22,.20) 0%,
+    rgba(12,6,20,.65) 60%,
+    rgba(10,5,18,.85) 100%
+  );
+}
+
+/* Screen 3: Letter Stage (Stage 5) - Full Screen Cover */
+.letter-cutout img{
+  object-position:center 20%;
+  opacity:0.55;
+  filter:contrast(1.06) brightness(0.9);
+}
+.letter-cutout::after{
+  background:radial-gradient(
+    circle at center 40%,
+    rgba(14,8,22,.25) 0%,
+    rgba(12,6,20,.70) 65%,
+    rgba(10,5,18,.88) 100%
+  );
+}
+
+/* Screen 4: Finale Stage (Stage 7) - Full Screen Ambient Cutout (No container) */
+#s-finale{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
+  padding:calc(60px + env(safe-area-inset-top, 0px)) 20px calc(38px + env(safe-area-inset-bottom, 0px));
+  box-sizing:border-box;
+  overflow:hidden;
+}
+.finale-content{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:14px;
+  position:relative;
+  z-index:5;
+  width:100%;
+  max-width:540px;
+  margin-top:auto;
+}
+#s-finale h1{
+  font-size:clamp(1.9rem, 7vw, 3.4rem);
+  line-height:1.2;
+  text-shadow:0 4px 20px rgba(0,0,0,1), 0 0 35px rgba(0,0,0,.95), 0 0 50px rgba(255,95,162,.85);
+  margin:0;
+}
+#s-finale .muted{
+  text-shadow:0 2px 14px rgba(0,0,0,1), 0 0 20px rgba(0,0,0,.9);
+  color:#fff;
+  font-size:1.15rem;
+  margin:0;
+}
+#s-finale .row{
+  margin-top:4px;
+}
+
+.finale-bg-cover{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  user-select:none;
+  z-index:1;
+  overflow:hidden;
+}
+
+.finale-bg-img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center top;
+  opacity:0;
+  transform:scale(1);
+  transition:opacity 1.4s ease-in-out, transform 8s ease-out;
+  display:block;
+  z-index:1;
+  filter:contrast(1.08) brightness(1.0);
+}
+
+@media (min-width:769px){
+  .finale-bg-img{
+    object-position:center 12%;
+  }
+}
+
+.finale-bg-img.active{
+  opacity:0.92;
+  transform:scale(1.03);
+}
+
+.finale-bg-overlay{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    to bottom,
+    rgba(14,8,22,.05) 0%,
+    rgba(14,8,22,.18) 45%,
+    rgba(12,6,20,.72) 75%,
+    rgba(10,5,18,.92) 100%
+  );
+  pointer-events:none;
+  z-index:2;
+}
