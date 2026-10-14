@@ -30,10 +30,11 @@ body{
 main{position:relative;z-index:5;height:100%;width:100%}
 .stage{
   position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
-  padding:calc(65px + env(safe-area-inset-top, 0px)) 20px 24px;text-align:center;opacity:0;pointer-events:none;transform:translateY(24px) scale(.98);
-  transition:opacity .6s,transform .6s;overflow-y:auto;overflow-x:hidden;
+  padding:calc(65px + env(safe-area-inset-top, 0px)) 20px 24px;text-align:center;opacity:0;pointer-events:none;transform:translateY(20px) scale(.99);
+  transition:opacity .45s cubic-bezier(.2,0,0,1),transform .45s cubic-bezier(.2,0,0,1);
+  overflow-y:auto;overflow-x:hidden;visibility:hidden;contain:content;
 }
-.stage.active{opacity:1;pointer-events:auto;transform:none}
+.stage.active{opacity:1;pointer-events:auto;transform:none;visibility:visible}
 h1{
   font-size:clamp(2.2rem,8.5vw,4.2rem);line-height:1.35;
   background:linear-gradient(90deg,var(--gold),var(--pink),var(--sky));

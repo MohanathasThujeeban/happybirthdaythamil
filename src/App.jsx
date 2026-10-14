@@ -341,18 +341,22 @@ export default function App() {
                 <div className="polaroid-img-box">
                   {m.type === "video" ? (
                     <>
-                      <video
-                        src={m.src}
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        preload="metadata"
-                      />
+                      {stage === 1 ? (
+                        <video
+                          src={m.src}
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          preload="none"
+                        />
+                      ) : (
+                        <div className="polaroid-placeholder"><span>🎬</span></div>
+                      )}
                       <span className="video-badge" title="Video clip">▶</span>
                     </>
                   ) : (
-                    <img src={m.src} alt={m.title} loading="lazy" />
+                    <img src={m.src} alt={m.title} loading="lazy" decoding="async" />
                   )}
                 </div>
                 <div className="polaroid-caption">
@@ -538,16 +542,21 @@ export default function App() {
           <div className="scratch">
             <div className="prize-media">
               {wish.surpriseMedia.type === "video" ? (
-                <video
-                  src={wish.surpriseMedia.src}
-                  poster={wish.surpriseMedia.poster}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                />
+                stage >= 6 ? (
+                  <video
+                    src={wish.surpriseMedia.src}
+                    poster={wish.surpriseMedia.poster}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    preload="none"
+                  />
+                ) : (
+                  <div style={{ background: "#2a0f3f", width: "100%", height: "100%" }} />
+                )
               ) : (
-                <img src={wish.surpriseMedia.src} alt="Surprise" />
+                <img src={wish.surpriseMedia.src} alt="Surprise" loading="lazy" />
               )}
               <div className="prize-badge">{wish.surpriseMedia.title} — {wish.surpriseMedia.text}</div>
             </div>
