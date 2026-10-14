@@ -5,10 +5,14 @@ let raf = null;
 let cv = null;
 let cx = null;
 
+function getDpr() {
+  return Math.min(window.devicePixelRatio || 1, 2);
+}
+
 function loop() {
   if (!cx || !cv) return;
   cx.clearRect(0, 0, cv.width, cv.height);
-  const d = window.devicePixelRatio || 1;
+  const d = getDpr();
   parts = parts.filter(p => p.life-- > 0 && p.y < window.innerHeight + 40);
 
   for (const p of parts) {
@@ -39,8 +43,9 @@ export function initConfetti(canvasElement) {
   cx = cv.getContext("2d");
   const fit = () => {
     if (!cv) return;
-    cv.width = window.innerWidth * (window.devicePixelRatio || 1);
-    cv.height = window.innerHeight * (window.devicePixelRatio || 1);
+    const d = getDpr();
+    cv.width = window.innerWidth * d;
+    cv.height = window.innerHeight * d;
   };
   fit();
   window.addEventListener("resize", fit);
@@ -48,7 +53,9 @@ export function initConfetti(canvasElement) {
 }
 
 export function burst(x = window.innerWidth / 2, y = window.innerHeight / 2, n = 120, power = 9) {
-  for (let i = 0; i < n; i++) {
+  const isMobile = window.innerWidth < 768;
+  const count = isMobile ? Math.round(n * 0.55) : n;
+  for (let i = 0; i < count; i++) {
     const a = Math.random() * Math.PI * 2;
     const v = Math.random() * power + 2;
     parts.push({
@@ -68,7 +75,9 @@ export function burst(x = window.innerWidth / 2, y = window.innerHeight / 2, n =
 }
 
 export function rain(n = 140) {
-  for (let i = 0; i < n; i++) {
+  const isMobile = window.innerWidth < 768;
+  const count = isMobile ? Math.round(n * 0.5) : n;
+  for (let i = 0; i < count; i++) {
     parts.push({
       x: Math.random() * window.innerWidth,
       y: -20 - Math.random() * 300,
@@ -79,23 +88,25 @@ export function rain(n = 140) {
       c: COLORS[(Math.random() * COLORS.length) | 0],
       rot: 0,
       vr: (Math.random() - 0.5) * 0.2,
-      life: 300
+      life: 250
     });
   }
   if (!raf) loop();
 }
 
 export function triggerFireworks() {
-  for (let i = 0; i < 6; i++) {
+  const isMobile = window.innerWidth < 768;
+  const bursts = isMobile ? 4 : 6;
+  for (let i = 0; i < bursts; i++) {
     setTimeout(
       () =>
         burst(
           window.innerWidth * (0.15 + Math.random() * 0.7),
           window.innerHeight * (0.15 + Math.random() * 0.4),
-          90,
+          isMobile ? 55 : 90,
           8
         ),
-      i * 300
+      i * 320
     );
   }
 }

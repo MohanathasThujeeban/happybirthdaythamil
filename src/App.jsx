@@ -15,8 +15,11 @@ export default function App() {
   });
 
   const [stage, setStage] = useState(0);
+  const [visitedStages, setVisitedStages] = useState([0, 1]);
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
   const confettiCanvasRef = useRef(null);
+
+  const shouldRenderStage = (s) => visitedStages.includes(s) || Math.abs(stage - s) <= 1;
 
   // Stage 0: Gift
   const [giftShaking, setGiftShaking] = useState(false);
@@ -60,6 +63,7 @@ export default function App() {
   // Stage Transitions
   const goToStage = (idx) => {
     setStage(idx);
+    setVisitedStages((prev) => (prev.includes(idx) ? prev : [...prev, idx]));
     if (idx === 1) {
       // Memory wall
       burst(window.innerWidth / 2, window.innerHeight * 0.35, 80, 8);
@@ -277,7 +281,7 @@ export default function App() {
     <>
       <canvas id="confetti" ref={confettiCanvasRef}></canvas>
       <div className="bg-stars">
-        {[...Array(60)].map((_, i) => (
+        {[...Array(24)].map((_, i) => (
           <i
             key={i}
             style={{
@@ -375,7 +379,7 @@ export default function App() {
         <section className={`stage ${stage === 2 ? "active" : ""}`} id="s-hero">
           <div className="avatar-wrap">
             <div className="avatar-ring">
-              <img src={wish.avatar} alt={wish.name} />
+              <img src={wish.avatar} alt={wish.name} loading="lazy" decoding="async" />
             </div>
             <div className="avatar-sparkles">✨</div>
           </div>
@@ -397,7 +401,7 @@ export default function App() {
         <section className={`stage ${stage === 3 ? "active" : ""}`} id="s-cake">
           <h2>Make a wish 🌠</h2>
           <p className="muted">Close your eyes, then blow the candles — or tap each flame</p>
-          
+
           <div className="cake">
             <div className="candles">
               {[...Array(CANDLE_COUNT)].map((_, i) => (
@@ -525,7 +529,7 @@ export default function App() {
                   style={{ "--rot": `${(idx - 1) * 5}deg` }}
                   onClick={() => openMediaModal(wish.letterPhotos.map(src => ({ type: "image", src, title: "Treasured Moment", text: "A memory kept close to heart." })), idx)}
                 >
-                  <img src={p} alt="Scrapbook moment" />
+                  <img src={p} alt="Scrapbook moment" loading="lazy" decoding="async" />
                 </div>
               ))}
             </div>
@@ -585,7 +589,7 @@ export default function App() {
                 onClick={() => openMediaModal(wish.finaleStream.map(src => ({ type: "image", src, title: "Forever Moments ✨", text: "Memories that stay forever bright." })), idx)}
                 title="Tap to view memory"
               >
-                <img src={p} alt="Finale stream" />
+                <img src={p} alt="Finale stream" loading="lazy" decoding="async" />
               </div>
             ))}
           </div>
@@ -605,7 +609,7 @@ export default function App() {
       {lightboxIndex !== null && activeMediaList[lightboxIndex] && (
         <div className="lightbox open" role="dialog" aria-modal="true">
           <div className="lightbox-backdrop" onClick={() => setLightboxIndex(null)}></div>
-          
+
           {/* Floating Left/Right Arrows for large screens */}
           <button
             className="lightbox-arrow-floating prev"
