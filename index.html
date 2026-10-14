@@ -1,143 +1,16 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Happy Birthday Thamil! 🎉</title>
-<meta name="theme-color" content="#1b1033">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<canvas id="confetti"></canvas>
-<div class="bg-stars" id="stars"></div>
-
-<header class="topbar">
-  <div class="dots" id="dots"></div>
-  <button id="music" class="icon-btn" aria-label="Play birthday tune">🎵</button>
-</header>
-
-<main id="app">
-
-  <!-- 1. GIFT -->
-  <section class="stage active" id="s-gift">
-    <p class="muted" id="introText"></p>
-    <button class="gift" id="gift" aria-label="Open the gift">
-      <span class="gift-lid"></span>
-      <span class="gift-box"></span>
-      <span class="gift-ribbon"></span>
-      <span class="gift-glow"></span>
-    </button>
-    <p class="hint">Tap the gift 🎁</p>
-  </section>
-
-  <!-- 2. HERO -->
-  <section class="stage" id="s-hero">
-    <div class="avatar-wrap" id="avatarWrap">
-      <div class="avatar-ring">
-        <img id="heroAvatar" src="" alt="Birthday Star">
-      </div>
-      <div class="avatar-sparkles">✨</div>
-    </div>
-    <p class="muted">Today is all about</p>
-    <h1 class="script" id="heroName">Thamil</h1>
-    <h2 class="typed" id="heroTyped"></h2>
-    <div class="age" id="ageWrap"><span id="age">0</span><small>years of awesome</small></div>
-    <button class="btn next">Let's celebrate →</button>
-  </section>
-
-  <!-- 3. CAKE -->
-  <section class="stage" id="s-cake">
-    <h2>Make a wish 🌠</h2>
-    <p class="muted">Close your eyes, then blow the candles — or tap each flame</p>
-    <div class="cake" id="cake">
-      <div class="candles" id="candles"></div>
-      <div class="tier t3"></div>
-      <div class="tier t2"></div>
-      <div class="tier t1"></div>
-      <div class="plate"></div>
-    </div>
-    <div class="row">
-      <button class="btn ghost" id="blowMic">🎤 Blow into the mic</button>
-    </div>
-    <p class="hint" id="cakeHint">0 / 0 candles out</p>
-    <button class="btn next hidden">Pop some balloons →</button>
-  </section>
-
-  <!-- 4. BALLOONS -->
-  <section class="stage" id="s-balloons">
-    <h2>Pop for a wish 🎈</h2>
-    <p class="muted" id="popCount"></p>
-    <div class="sky" id="sky"></div>
-    <div class="toast" id="toast"></div>
-    <button class="btn next hidden">See the memories →</button>
-  </section>
-
-  <!-- 5. MEMORIES -->
-  <section class="stage" id="s-memories">
-    <h2>Captured Moments 📸</h2>
-    <p class="muted">Tap any polaroid to view & read the memory</p>
-    <div class="polaroid-wall" id="cards"></div>
-    <button class="btn next">A letter for you →</button>
-  </section>
-
-  <!-- 6. LETTER -->
-  <section class="stage" id="s-letter">
-    <div class="paper">
-      <h3 class="script" id="letterTo"></h3>
-      <p id="letterText"></p>
-      <p class="sign script" id="letterFrom"></p>
-    </div>
-    <button class="btn next">One last surprise →</button>
-  </section>
-
-  <!-- 7. SCRATCH -->
-  <section class="stage" id="s-scratch">
-    <h2>Scratch to reveal 🎟️</h2>
-    <div class="scratch">
-      <div class="prize" id="prize"></div>
-      <canvas id="scratchCanvas"></canvas>
-    </div>
-    <p class="hint">Use your finger or mouse</p>
-    <button class="btn next hidden">Finish ✨</button>
-  </section>
-
-  <!-- 8. FINALE -->
-  <section class="stage" id="s-finale">
-    <h1 class="script big" id="finaleTitle"></h1>
-    <p class="muted" id="finaleSub"></p>
-    <div class="row">
-      <button class="btn" id="fireworks">🎆 More fireworks</button>
-      <button class="btn ghost" id="replay">↺ Replay</button>
-    </div>
-  </section>
-
-  <!-- LIGHTBOX MODAL -->
-  <div class="lightbox" id="lightbox" aria-hidden="true" role="dialog">
-    <div class="lightbox-backdrop" id="lightboxBackdrop"></div>
-    <div class="lightbox-card">
-      <button class="lightbox-close" id="lightboxClose" aria-label="Close modal">✕</button>
-      <div class="lightbox-photo-wrap">
-        <img id="lightboxImg" src="" alt="Memory">
-      </div>
-      <div class="lightbox-content">
-        <span class="lightbox-tag script" id="lightboxTag">Memory</span>
-        <h3 id="lightboxTitle"></h3>
-        <p id="lightboxText"></p>
-        <div class="lightbox-nav">
-          <button class="lightbox-arrow" id="lbPrev" aria-label="Previous photo">‹</button>
-          <span class="lightbox-counter" id="lbCounter">1 / 3</span>
-          <button class="lightbox-arrow" id="lbNext" aria-label="Next photo">›</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</main>
-
-<script src="config.js"></script>
-<script src="script.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Happy Birthday Thamil! 🎉</title>
+    <meta name="theme-color" content="#1b1033" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
