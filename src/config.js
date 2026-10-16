@@ -4,7 +4,20 @@ export const WISH_CONFIG = {
   from: "Thujeeban",
   age: 25,
   avatar: "/photos/img_01.jpeg", // Hero Star Avatar Portrait
+  readyTitle: "are you ready",
+  readyName: "kammaniiii",
+  readyBtn: "Yes, I'm ready! 💜",
   intro: "Someone special has a surprise for you…",
+  // Flower Bouquet surprise revealed after opening the gift box
+  bouquet: {
+    img: "/photos/bouquet.jpg",
+    title: "A Bouquet For You 💐",
+    subtitle: "Freshly bloomed with all my love for your special day",
+    tagText: "Happy Birthday Kammaniiii! 💜",
+    message: "Like these flowers, may your year bloom with boundless joy, radiant smiles, and endless love. You make life so much more beautiful! 🌸✨",
+    from: "Thujeeban 💛",
+    btnText: "Walk down memory lane → 📸"
+  },
   // Background Music: place your audio file in the public/ folder as music.mp3 (e.g. "/music.mp3")
   music: "/music.mp3",
 
@@ -41,6 +54,7 @@ export const WISH_CONFIG = {
   ],
 
   // 3. Balloon Wishes: Each popped balloon reveals a personal wish with a photo! (6 photos)
+  balloonGif: "/photos/kiss.gif",
   wishes: [
     { text: "May this year bring you everything your heart quietly hopes for 💛", img: "/photos/img_15.jpeg" },
     { text: "Wishing you endless laughter, zero stress, and boundless joy 😄", img: "/photos/img_16.jpeg" },

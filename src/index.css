@@ -309,26 +309,121 @@ h2{font-size:clamp(1.3rem,5vw,2rem);font-weight:600;line-height:1.3}
   animation:fadein .3s ease both;
 }
 .balloon-reveal-card{
-  position:relative;width:min(420px,90vw);max-height:85vh;overflow-y:auto;
-  background:linear-gradient(160deg,rgba(45,20,68,.95),rgba(20,10,38,.98));
-  border:2px solid var(--gold);border-radius:28px;padding:24px 20px 22px;
-  box-shadow:0 25px 60px rgba(0,0,0,.7),0 0 35px rgba(255,209,102,.3);
+  position:relative;width:min(460px,92vw);max-height:88vh;overflow-y:auto;
+  background:linear-gradient(160deg,rgba(45,20,68,.96),rgba(20,10,38,.98));
+  border:2px solid var(--gold);border-radius:28px;padding:22px 20px 20px;
+  box-shadow:0 25px 60px rgba(0,0,0,.75),0 0 35px rgba(255,209,102,.35);
   display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center;
   animation:pop .45s cubic-bezier(.34,1.56,.64,1) both;
 }
-.balloon-cutout-wrap{
-  position:relative;width:100%;height:240px;max-height:38vh;
+
+/* Photo Showcase & Disappearing Kiss GIF Overlay */
+.balloon-photo-showcase{
+  position:relative;width:100%;max-width:390px;height:280px;
+  max-height:42vh;display:flex;align-items:center;justify-content:center;
+  border-radius:20px;overflow:hidden;background:#15092a;
+  border:2px solid rgba(255,209,102,.5);box-shadow:0 14px 35px rgba(0,0,0,.6);
+}
+.balloon-photo-frame{
+  width:100%;height:100%;position:relative;cursor:pointer;
   display:flex;align-items:center;justify-content:center;
+  padding:10px;box-sizing:border-box;overflow:hidden;
+}
+.balloon-photo-backdrop-blur{
+  position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+  filter:blur(22px) brightness(0.38) saturate(1.3);opacity:.75;
+  transform:scale(1.15);pointer-events:none;z-index:1;
+}
+.balloon-photo-img{
+  position:relative;z-index:2;
+  max-width:100%;max-height:100%;width:auto;height:auto;
+  object-fit:contain;display:block;margin:auto;
+  border-radius:12px;
+  box-shadow:0 8px 24px rgba(0,0,0,.5);
+  transition:transform .3s ease;
+}
+.balloon-photo-frame:hover .balloon-photo-img{
+  transform:scale(1.03);
+}
+.balloon-photo-badge{
+  position:absolute;bottom:8px;right:8px;z-index:3;
+  background:rgba(18,9,34,.88);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  color:#ffd166;font-size:.72rem;font-weight:500;padding:4px 10px;border-radius:999px;
+  border:1px solid rgba(255,209,102,.3);box-shadow:0 2px 6px rgba(0,0,0,.4);
+  pointer-events:none;
+}
+
+/* Kiss Overlay that appears and disappears */
+.balloon-kiss-overlay{
+  position:absolute;inset:0;z-index:10;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(16,8,30,.45);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  border-radius:18px;
+  pointer-events:auto;
+}
+.balloon-kiss-overlay.fade-in{
+  animation:kissOverlayIn .42s cubic-bezier(.34,1.56,.64,1) both;
+}
+.balloon-kiss-overlay.fade-out{
+  animation:kissOverlayOut .45s ease-in forwards;
+}
+
+.balloon-kiss-bubble{
+  position:relative;width:160px;height:160px;
+  border-radius:24px;background:#24123f;
+  border:2.5px solid var(--gold);
+  box-shadow:0 14px 40px rgba(0,0,0,.75),0 0 30px rgba(255,95,162,.6);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
   overflow:visible;
 }
-.balloon-cutout-img{
-  max-width:100%;max-height:100%;object-fit:contain;
-  filter:drop-shadow(0 15px 25px rgba(255,95,162,.45)) drop-shadow(0 5px 12px rgba(255,209,102,.35));
-  animation:floatSoft 3s ease-in-out infinite alternate;cursor:pointer;
-  transition:transform .3s;
+.balloon-kiss-gif-element{
+  width:100%;height:100%;object-fit:cover;border-radius:21px;
+  display:block;
 }
-.balloon-cutout-img:hover{
-  transform:scale(1.06);
+.balloon-kiss-hearts-fx{
+  position:absolute;top:-18px;display:flex;gap:12px;font-size:1.25rem;
+  animation:heartsFloat 1.6s infinite alternate ease-in-out;
+  pointer-events:none;
+}
+.balloon-kiss-hearts-fx span:nth-child(1){animation:heartPulse 1.2s infinite alternate ease}
+.balloon-kiss-hearts-fx span:nth-child(2){animation:heartPulse 1s .3s infinite alternate ease}
+.balloon-kiss-hearts-fx span:nth-child(3){animation:heartPulse 1.4s .6s infinite alternate ease}
+
+.balloon-kiss-title{
+  position:absolute;bottom:-12px;left:50%;transform:translateX(-50%);
+  background:linear-gradient(135deg,var(--gold),var(--pink));color:#2a0f3f;
+  font-weight:700;font-size:.74rem;padding:4px 12px;border-radius:999px;
+  white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.45);
+}
+
+.balloon-action-row{
+  display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;
+  width:100%;
+}
+.btn-replay-kiss{
+  background:rgba(255,95,162,.18);color:#ffd166;
+  border:1px solid rgba(255,209,102,.45);padding:10px 18px;border-radius:999px;
+  font:600 .88rem 'Poppins',sans-serif;cursor:pointer;
+  transition:all .2s ease;
+  box-shadow:0 4px 12px rgba(0,0,0,.3);
+}
+.btn-replay-kiss:hover{
+  background:rgba(255,95,162,.3);color:#fff;
+  transform:scale(1.05);
+}
+
+@keyframes kissOverlayIn{
+  0%{opacity:0;transform:scale(.5) rotate(-6deg)}
+  70%{transform:scale(1.06) rotate(2deg)}
+  100%{opacity:1;transform:scale(1) rotate(0deg)}
+}
+@keyframes kissOverlayOut{
+  0%{opacity:1;transform:scale(1)}
+  100%{opacity:0;transform:scale(.75) translateY(-14px)}
+}
+@keyframes heartsFloat{
+  0%{transform:translateY(0)}
+  100%{transform:translateY(-8px)}
 }
 .balloon-reveal-text{
   font-size:1.15rem;font-weight:500;color:#fff;line-height:1.55;
@@ -595,3 +690,615 @@ h2{font-size:clamp(1.3rem,5vw,2rem);font-weight:600;line-height:1.3}
   pointer-events:none;
   z-index:2;
 }
+
+/* ==========================================================================
+   STAGE 0: "ARE YOU READY" - "KAMMANIIII 💜" SCREEN
+   ========================================================================== */
+#s-ready {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  overflow: hidden;
+}
+
+.ready-floating-hearts {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.floating-purple-particle {
+  position: absolute;
+  bottom: -20px;
+  opacity: 0;
+  animation: floatUpPurpleHeart linear infinite;
+  filter: drop-shadow(0 0 10px rgba(192, 132, 252, 0.8));
+  user-select: none;
+}
+
+@keyframes floatUpPurpleHeart {
+  0% {
+    transform: translateY(0) scale(0.6) rotate(0deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.7;
+  }
+  85% {
+    opacity: 0.65;
+  }
+  100% {
+    transform: translateY(-92vh) scale(1.15) rotate(22deg);
+    opacity: 0;
+  }
+}
+
+.ready-card {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  max-width: 480px;
+  width: 100%;
+  padding: 34px 24px 28px;
+  border-radius: 28px;
+  background: radial-gradient(130% 100% at 50% 0%, rgba(168, 85, 247, 0.18) 0%, rgba(58, 20, 87, 0.42) 60%, rgba(27, 16, 51, 0.65) 100%);
+  border: 1px solid rgba(216, 180, 254, 0.25);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5), 0 0 45px rgba(168, 85, 247, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  animation: pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.ready-heart-hero {
+  position: relative;
+  width: 130px;
+  height: 130px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2px;
+}
+
+.ready-heart-glow-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 2px solid rgba(192, 132, 252, 0.5);
+  box-shadow: 0 0 24px rgba(168, 85, 247, 0.45);
+  animation: pulseRing 2.6s infinite ease-out;
+  pointer-events: none;
+}
+
+.ready-heart-glow-ring.delay {
+  animation-delay: 0.85s;
+}
+
+.ready-heart-glow-ring.delay2 {
+  animation-delay: 1.7s;
+}
+
+.ready-heart-badge {
+  position: relative;
+  z-index: 3;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 35% 35%, #9333ea, #4c1d95 85%);
+  border: 2px solid rgba(233, 213, 255, 0.65);
+  box-shadow: 0 10px 30px rgba(147, 51, 234, 0.6), 0 0 25px rgba(192, 132, 252, 0.4), inset 0 2px 6px rgba(255, 255, 255, 0.5);
+  animation: readyHeartBeat 1.8s infinite ease-in-out;
+}
+
+.ready-big-heart {
+  font-size: 46px;
+  line-height: 1;
+  display: block;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.4));
+}
+
+.ready-question {
+  font-size: clamp(1.2rem, 4.8vw, 1.75rem);
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  color: rgba(243, 232, 255, 0.92);
+  margin: 0;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+}
+
+.ready-name {
+  font-size: clamp(2.4rem, 9.5vw, 4.2rem);
+  line-height: 1.25;
+  margin: 0;
+  padding: 0.05em 0.2em 0.15em;
+  background: linear-gradient(135deg, #fdf4ff 0%, #d8b4fe 35%, #ff70a6 70%, #ffd166 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 4px 22px rgba(192, 132, 252, 0.5));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.inline-purple-heart {
+  font-size: 0.82em;
+  display: inline-block;
+  color: #c084fc;
+  filter: drop-shadow(0 0 14px rgba(192, 132, 252, 0.9));
+  animation: heartWiggle 2.2s infinite ease-in-out;
+  transform-origin: center bottom;
+}
+
+.ready-btn {
+  background: linear-gradient(135deg, #9333ea 0%, #c026d3 50%, #f43f5e 100%) !important;
+  color: #fff !important;
+  font-size: clamp(1rem, 4vw, 1.15rem);
+  padding: 14px 34px !important;
+  border-radius: 999px !important;
+  box-shadow: 0 10px 32px rgba(168, 85, 247, 0.55), 0 0 22px rgba(192, 38, 211, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.ready-btn:hover {
+  transform: translateY(-3px) scale(1.05) !important;
+  box-shadow: 0 14px 40px rgba(168, 85, 247, 0.72), 0 0 28px rgba(244, 63, 94, 0.55) !important;
+}
+
+@keyframes readyHeartBeat {
+  0% { transform: scale(1); }
+  12% { transform: scale(1.14); }
+  24% { transform: scale(1); }
+  36% { transform: scale(1.22); }
+  60% { transform: scale(1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.7);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.85);
+    opacity: 0;
+  }
+}
+
+@keyframes heartWiggle {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  25% { transform: scale(1.14) rotate(-8deg); }
+  50% { transform: scale(1.05) rotate(6deg); }
+  75% { transform: scale(1.16) rotate(-4deg); }
+}
+
+/* ==========================================================================
+   STAGE 2: REALISTIC FLOWER BOUQUET PRESENTATION & UNWRAPPING
+   ========================================================================== */
+
+#s-bouquet {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  padding: calc(68px + env(safe-area-inset-top, 0px)) 16px calc(24px + env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ambient falling blossom petals */
+.bouquet-petals-field {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.floating-petal-particle {
+  position: absolute;
+  top: -30px;
+  opacity: 0.85;
+  animation-name: bouquetPetalFall;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.25));
+  will-change: transform, opacity;
+}
+
+@keyframes bouquetPetalFall {
+  0% {
+    transform: translateY(0) rotate(0deg) translateX(0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  85% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(105vh) rotate(360deg) translateX(40px);
+    opacity: 0;
+  }
+}
+
+/* Stage Header */
+.bouquet-stage-header {
+  position: relative;
+  z-index: 3;
+  margin-bottom: 6px;
+  max-width: 480px;
+  flex-shrink: 0;
+}
+
+.bouquet-pill-tag {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 215, 0, 0.45);
+  backdrop-filter: blur(8px);
+  color: #fde68a;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.25);
+}
+
+.bouquet-title {
+  font-size: clamp(1.8rem, 6vw, 2.5rem);
+  line-height: 1.2;
+  margin: 0 0 2px;
+  background: linear-gradient(135deg, #fff 15%, #ffd166 50%, #f472b6 85%, #c084fc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 4px 18px rgba(244, 114, 182, 0.45));
+}
+
+.bouquet-subtitle {
+  font-size: clamp(0.82rem, 3vw, 0.94rem);
+  color: rgba(243, 232, 255, 0.88);
+  margin: 0 auto;
+  line-height: 1.35;
+}
+
+/* Bouquet Presentation Showcase */
+.bouquet-presentation-wrapper {
+  position: relative;
+  z-index: 3;
+  margin: 8px auto 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Radial Bloom Aura Glow */
+.bouquet-glow-aura {
+  position: absolute;
+  width: 110%;
+  height: 110%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(244, 114, 182, 0.35) 0%, rgba(192, 132, 252, 0.22) 50%, transparent 75%);
+  filter: blur(24px);
+  z-index: 1;
+  pointer-events: none;
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: scale(0.9);
+}
+
+.bouquet-glow-aura.blooming {
+  background: radial-gradient(circle, rgba(251, 191, 36, 0.45) 0%, rgba(244, 114, 182, 0.45) 45%, rgba(168, 85, 247, 0.3) 70%, transparent 85%);
+  filter: blur(32px);
+  transform: scale(1.3);
+  animation: auraPulse 2.8s infinite ease-in-out;
+}
+
+@keyframes auraPulse {
+  0%, 100% { transform: scale(1.22); opacity: 0.85; }
+  50% { transform: scale(1.35); opacity: 1; }
+}
+
+/* Fluttering Butterflies */
+.bouquet-butterflies {
+  position: absolute;
+  inset: -20px;
+  pointer-events: none;
+  z-index: 6;
+}
+
+.bouquet-butterflies .butterfly {
+  position: absolute;
+  font-size: 26px;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
+}
+
+.bouquet-butterflies .b1 {
+  top: 4%;
+  left: -8%;
+  animation: flutterOne 4.5s infinite ease-in-out;
+}
+
+.bouquet-butterflies .b2 {
+  top: -6%;
+  right: 12%;
+  font-size: 20px;
+  animation: flutterSparkle 2.2s infinite ease-in-out;
+}
+
+.bouquet-butterflies .b3 {
+  bottom: 8%;
+  right: -6%;
+  animation: flutterTwo 5.2s infinite ease-in-out;
+}
+
+@keyframes flutterOne {
+  0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  30% { transform: translate(16px, -18px) rotate(15deg) scale(1.1); }
+  60% { transform: translate(-10px, -28px) rotate(-12deg) scale(0.95); }
+}
+
+@keyframes flutterTwo {
+  0%, 100% { transform: translate(0, 0) rotate(0deg) scale(1); }
+  40% { transform: translate(-14px, -16px) rotate(-15deg) scale(1.08); }
+  75% { transform: translate(12px, -24px) rotate(10deg) scale(0.92); }
+}
+
+@keyframes flutterSparkle {
+  0%, 100% { transform: scale(0.8) rotate(0deg); opacity: 0.6; }
+  50% { transform: scale(1.25) rotate(180deg); opacity: 1; }
+}
+
+/* Main Bouquet Photo Card */
+.bouquet-image-card {
+  position: relative;
+  z-index: 2;
+  width: min(78vw, 275px);
+  aspect-ratio: 1 / 1;
+  border-radius: 26px;
+  overflow: hidden;
+  box-shadow: 0 16px 45px rgba(0, 0, 0, 0.65), 0 0 25px rgba(168, 85, 247, 0.35);
+  border: 2.5px solid rgba(251, 191, 36, 0.45);
+  cursor: pointer;
+  background: #19092c;
+  transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.45s ease, border-color 0.45s ease;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.bouquet-image-card:hover:not(.unwrapped) {
+  transform: translateY(-4px) scale(1.02);
+  border-color: rgba(251, 191, 36, 0.85);
+  box-shadow: 0 24px 55px rgba(0, 0, 0, 0.75), 0 0 35px rgba(245, 158, 11, 0.5);
+}
+
+.bouquet-image-card.unwrapped {
+  cursor: default;
+  transform: scale(1.03);
+  border-color: rgba(251, 191, 36, 0.85);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), 0 0 45px rgba(244, 114, 182, 0.55), 0 0 25px rgba(251, 191, 36, 0.5);
+  animation: bouquetFloat 4.5s infinite ease-in-out;
+}
+
+@keyframes bouquetFloat {
+  0%, 100% { transform: translateY(0) scale(1.03); }
+  50% { transform: translateY(-7px) scale(1.038); }
+}
+
+.bouquet-main-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s ease;
+}
+
+.bouquet-image-card.unwrapped .bouquet-main-image {
+  transform: scale(1.04);
+}
+
+/* Dewdrop / Silk Shimmer Sheen */
+.bouquet-shimmer-effect {
+  position: absolute;
+  inset: -100%;
+  background: linear-gradient(
+    45deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.22) 50%,
+    transparent 65%
+  );
+  transform: rotate(25deg);
+  pointer-events: none;
+  animation: bouquetShimmer 4.8s infinite ease-in-out;
+}
+
+@keyframes bouquetShimmer {
+  0% { transform: translateY(-120%) rotate(25deg); }
+  40%, 100% { transform: translateY(120%) rotate(25deg); }
+}
+
+/* Interactive Satin Ribbon Overlay */
+.satin-ribbon-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 4, 22, 0.38);
+  backdrop-filter: blur(1.5px);
+  z-index: 5;
+  transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.satin-ribbon-overlay.slide-off {
+  opacity: 0;
+  transform: scale(1.2) translateY(-25px);
+  pointer-events: none;
+}
+
+/* Satin Ribbon Bow Button */
+.satin-ribbon-btn {
+  background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 45%, #d97706 100%);
+  color: #381a03 !important;
+  font-weight: 800;
+  font-size: clamp(0.85rem, 3.4vw, 0.98rem);
+  padding: 11px 22px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 10px 28px rgba(217, 119, 6, 0.65), 0 0 20px rgba(251, 191, 36, 0.6);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  animation: ribbonPulse 2s infinite ease-in-out;
+  z-index: 2;
+}
+
+.satin-ribbon-btn:hover {
+  transform: scale(1.08) translateY(-2px);
+  box-shadow: 0 14px 34px rgba(217, 119, 6, 0.8), 0 0 28px rgba(251, 191, 36, 0.85);
+}
+
+.ribbon-bow-icon {
+  font-size: 1.45rem;
+  line-height: 1;
+  display: inline-block;
+  animation: bowWiggle 2.4s infinite ease-in-out;
+}
+
+.ribbon-gold-band {
+  position: absolute;
+  width: 140%;
+  height: 22px;
+  background: linear-gradient(90deg, transparent 5%, rgba(251, 191, 36, 0.85) 30%, rgba(245, 158, 11, 0.95) 50%, rgba(251, 191, 36, 0.85) 70%, transparent 95%);
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.4), 0 0 16px rgba(251, 191, 36, 0.5);
+  pointer-events: none;
+  z-index: 1;
+  transform: rotate(-12deg);
+}
+
+@keyframes ribbonPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes bowWiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-8deg); }
+  75% { transform: rotate(8deg); }
+}
+
+/* Unwrapped Romantic Message Card */
+.bouquet-card-note {
+  position: relative;
+  z-index: 4;
+  width: min(88vw, 390px);
+  margin: 10px auto 6px;
+  padding: 14px 20px 12px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(254, 243, 199, 0.94) 100%);
+  color: #2b0c3d;
+  border: 1.5px solid rgba(245, 158, 11, 0.55);
+  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.4), 0 0 24px rgba(251, 191, 36, 0.25);
+  text-align: center;
+  animation: bouquetCardUnfold 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  backdrop-filter: blur(12px);
+  flex-shrink: 0;
+}
+
+@keyframes bouquetCardUnfold {
+  0% {
+    opacity: 0;
+    transform: translateY(22px) scale(0.92);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.bouquet-card-seal {
+  font-size: 24px;
+  line-height: 1;
+  margin-bottom: 6px;
+  display: inline-block;
+  filter: drop-shadow(0 2px 6px rgba(217, 119, 6, 0.4));
+  animation: sealPop 0.5s ease-out;
+}
+
+@keyframes sealPop {
+  0% { transform: scale(0); }
+  80% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
+.bouquet-card-text {
+  font-size: clamp(0.88rem, 3.2vw, 0.98rem);
+  line-height: 1.58;
+  color: #3b0764;
+  margin: 0 0 8px;
+  font-style: italic;
+  font-weight: 500;
+}
+
+.bouquet-card-signature {
+  display: block;
+  font-size: 1.25rem;
+  color: #b45309;
+  text-align: right;
+  font-weight: 700;
+}
+
+.bouquet-next-btn {
+  position: relative;
+  z-index: 4;
+  margin-top: 10px;
+  background: linear-gradient(135deg, #ec4899 0%, #a855f7 60%, #6366f1 100%) !important;
+  color: #fff !important;
+  box-shadow: 0 10px 30px rgba(168, 85, 247, 0.55), 0 0 22px rgba(236, 72, 153, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.35) !important;
+  padding: 12px 28px !important;
+  font-size: clamp(0.92rem, 3.8vw, 1.05rem);
+  border-radius: 999px !important;
+  animation: bouquetBtnFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  flex-shrink: 0;
+}
+
+.bouquet-next-btn:hover {
+  transform: translateY(-3px) scale(1.05) !important;
+  box-shadow: 0 14px 40px rgba(168, 85, 247, 0.75), 0 0 28px rgba(236, 72, 153, 0.6) !important;
+}
+
+@keyframes bouquetBtnFadeIn {
+  0% { opacity: 0; transform: translateY(14px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+

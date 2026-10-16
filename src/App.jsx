@@ -10,7 +10,10 @@ export default function App() {
       ...WISH_CONFIG,
       name: params.get("name") || WISH_CONFIG.name,
       from: params.get("from") || WISH_CONFIG.from,
-      age: params.get("age") ? parseInt(params.get("age"), 10) : WISH_CONFIG.age
+      age: params.get("age") ? parseInt(params.get("age"), 10) : WISH_CONFIG.age,
+      readyTitle: params.get("readyTitle") || WISH_CONFIG.readyTitle,
+      readyName: params.get("readyName") || WISH_CONFIG.readyName,
+      readyBtn: params.get("readyBtn") || WISH_CONFIG.readyBtn
     };
   });
 
@@ -21,19 +24,44 @@ export default function App() {
 
   const shouldRenderStage = (s) => visitedStages.includes(s) || Math.abs(stage - s) <= 1;
 
-  // Stage 0: Gift
+  // Stage 0: Ready Click Action
+  const handleReadyClick = () => {
+    burst(window.innerWidth / 2, window.innerHeight / 2, 130, 10);
+    if (!isPlayingMusic) {
+      startBackgroundMusic(wish.music, setIsPlayingMusic);
+    }
+    goToStage(1);
+  };
+
+  // Stage 1: Gift
   const [giftShaking, setGiftShaking] = useState(false);
   const [giftOpen, setGiftOpen] = useState(false);
 
-  // Stage 1: Core Memories & Lightbox
+  // Stage 2: Realistic Flower Bouquet
+  const [bouquetUnwrapped, setBouquetUnwrapped] = useState(false);
+  const [ribbonUntying, setRibbonUntying] = useState(false);
+
+  const handleUnwrapBouquet = () => {
+    if (bouquetUnwrapped || ribbonUntying) return;
+    setRibbonUntying(true);
+    burst(window.innerWidth / 2, window.innerHeight * 0.45, 140, 10);
+    rain(70);
+    setTimeout(() => {
+      setRibbonUntying(false);
+      setBouquetUnwrapped(true);
+      burst(window.innerWidth / 2, window.innerHeight * 0.4, 180, 12);
+    }, 750);
+  };
+
+  // Stage 3: Core Memories & Lightbox (Preserved completely!)
   const [lightboxIndex, setLightboxIndex] = useState(null);
   const [activeMediaList, setActiveMediaList] = useState(wish.memories);
 
-  // Stage 2: Hero
+  // Stage 4: Hero
   const [typedText, setTypedText] = useState("");
   const [displayedAge, setDisplayedAge] = useState(0);
 
-  // Stage 3: Cake & Candles
+  // Stage 5: Cake & Candles
   const CANDLE_COUNT = 5;
   const [extinguishedCandles, setExtinguishedCandles] = useState([]);
   const extinguishedCandlesRef = useRef([]);
@@ -43,23 +71,23 @@ export default function App() {
   const [isListeningMic, setIsListeningMic] = useState(false);
   const [micStatusText, setMicStatusText] = useState("🎤 Blow into the mic");
 
-  // Stage 4: Balloons
+  // Stage 6: Balloons
   const [poppedBalloons, setPoppedBalloons] = useState([]);
   const [balloonToast, setBalloonToast] = useState({ text: "", img: "" });
   const [showToast, setShowToast] = useState(false);
 
-  // Stage 5: Love Letter
+  // Stage 7: Love Letter
   const [letterTyped, setLetterTyped] = useState("");
 
-  // Stage 6: Scratch Card
+  // Stage 8: Scratch Card
   const scratchCanvasRef = useRef(null);
   const [scratchRevealed, setScratchRevealed] = useState(false);
 
-  // Stage 7: Finale background memory playback state
+  // Stage 9: Finale background memory playback state
   const [finaleSlide, setFinaleSlide] = useState(0);
 
   useEffect(() => {
-    if (stage !== 7) return;
+    if (stage !== 9) return;
     const count = wish.finaleCutouts?.length || wish.finaleStream?.length || 5;
     const interval = setInterval(() => {
       setFinaleSlide((prev) => (prev + 1) % count);
@@ -79,11 +107,15 @@ export default function App() {
   const goToStage = (idx) => {
     setStage(idx);
     setVisitedStages((prev) => (prev.includes(idx) ? prev : [...prev, idx]));
-    if (idx === 1) {
+    if (idx === 2) {
+      // Bouquet stage arrival
+      burst(window.innerWidth / 2, window.innerHeight * 0.45, 100, 9);
+      rain(50);
+    } else if (idx === 3) {
       // Memory wall
       burst(window.innerWidth / 2, window.innerHeight * 0.35, 80, 8);
       rain(60);
-    } else if (idx === 2) {
+    } else if (idx === 4) {
       // Hero typing
       setTypedText("");
       setDisplayedAge(0);
@@ -103,7 +135,7 @@ export default function App() {
         }, Math.max(30, 1200 / wish.age));
       }
       setTimeout(() => rain(100), 300);
-    } else if (idx === 5) {
+    } else if (idx === 7) {
       // Letter typing
       setLetterTyped("");
       let cur = 0;
@@ -112,7 +144,7 @@ export default function App() {
         setLetterTyped(wish.letter.slice(0, cur));
         if (cur >= wish.letter.length) clearInterval(timer);
       }, 26);
-    } else if (idx === 7) {
+    } else if (idx === 9) {
       // Finale
       triggerFireworks();
       rain(180);
@@ -132,13 +164,13 @@ export default function App() {
       setGiftOpen(true);
       burst(window.innerWidth / 2, window.innerHeight / 2, 160, 11);
     }, 550);
-    setTimeout(() => goToStage(1), 1600);
+    setTimeout(() => goToStage(2), 1600);
   };
 
   // Automatic volume ducking when other sounds or videos are playing
   useEffect(() => {
     const isLightboxVideo = lightboxIndex !== null && activeMediaList[lightboxIndex]?.type === "video";
-    const isScratchVideo = stage === 6 && scratchRevealed && wish.surpriseMedia?.type === "video";
+    const isScratchVideo = stage === 8 && scratchRevealed && wish.surpriseMedia?.type === "video";
     const isMicActive = isListeningMic;
 
     if (isLightboxVideo || isScratchVideo || isMicActive) {
@@ -150,7 +182,7 @@ export default function App() {
 
   // Stop mic on stage navigation
   useEffect(() => {
-    if (stage !== 3 && micStreamRef.current) {
+    if (stage !== 5 && micStreamRef.current) {
       micStreamRef.current.getTracks().forEach((t) => t.stop());
       micStreamRef.current = null;
       setIsListeningMic(false);
@@ -256,6 +288,65 @@ export default function App() {
 
   // Balloon Pop -> Reveals Large Cutout / GIF & Wish Modal
   const [activeBalloonWish, setActiveBalloonWish] = useState(null);
+  const [showKissGif, setShowKissGif] = useState(false);
+  const [kissGifFading, setKissGifFading] = useState(false);
+  const kissTimeoutRef = useRef(null);
+  const kissFadeTimeoutRef = useRef(null);
+
+  // Whenever a balloon is popped and photo shows up: GIF appears, plays, and disappears
+  useEffect(() => {
+    if (!activeBalloonWish) {
+      setShowKissGif(false);
+      setKissGifFading(false);
+      if (kissTimeoutRef.current) clearTimeout(kissTimeoutRef.current);
+      if (kissFadeTimeoutRef.current) clearTimeout(kissFadeTimeoutRef.current);
+      return;
+    }
+
+    // Reset initial state so each photo reveal triggers fresh
+    setShowKissGif(false);
+    setKissGifFading(false);
+    if (kissTimeoutRef.current) clearTimeout(kissTimeoutRef.current);
+    if (kissFadeTimeoutRef.current) clearTimeout(kissFadeTimeoutRef.current);
+
+    // After the photo shows up (~400ms delay), the kiss GIF appears
+    const appearTimer = setTimeout(() => {
+      setShowKissGif(true);
+      setKissGifFading(false);
+
+      // Plays the kiss animation for ~2.8s, then smoothly begins fading out
+      kissFadeTimeoutRef.current = setTimeout(() => {
+        setKissGifFading(true);
+
+        // After 450ms fade-out transition, completely disappears
+        kissTimeoutRef.current = setTimeout(() => {
+          setShowKissGif(false);
+          setKissGifFading(false);
+        }, 450);
+      }, 2800);
+    }, 400);
+
+    return () => {
+      clearTimeout(appearTimer);
+      if (kissFadeTimeoutRef.current) clearTimeout(kissFadeTimeoutRef.current);
+      if (kissTimeoutRef.current) clearTimeout(kissTimeoutRef.current);
+    };
+  }, [activeBalloonWish]);
+
+  const triggerKiss = () => {
+    setShowKissGif(true);
+    setKissGifFading(false);
+    if (kissFadeTimeoutRef.current) clearTimeout(kissFadeTimeoutRef.current);
+    if (kissTimeoutRef.current) clearTimeout(kissTimeoutRef.current);
+
+    kissFadeTimeoutRef.current = setTimeout(() => {
+      setKissGifFading(true);
+      kissTimeoutRef.current = setTimeout(() => {
+        setShowKissGif(false);
+        setKissGifFading(false);
+      }, 450);
+    }, 2800);
+  };
 
   const popBalloon = (idx, e, wishObj) => {
     if (poppedBalloons.includes(idx)) return;
@@ -264,7 +355,7 @@ export default function App() {
 
     const next = [...poppedBalloons, idx];
     setPoppedBalloons(next);
-    setActiveBalloonWish(wishObj);
+    setActiveBalloonWish({ ...wishObj, index: idx });
 
     if (next.length === wish.wishes.length) {
       rain(120);
@@ -273,7 +364,7 @@ export default function App() {
 
   // Scratch Canvas Init
   useEffect(() => {
-    if (stage === 6 && scratchCanvasRef.current) {
+    if (stage === 8 && scratchCanvasRef.current) {
       const c = scratchCanvasRef.current;
       const parent = c.parentElement;
       const box = parent.getBoundingClientRect();
@@ -379,7 +470,7 @@ export default function App() {
 
       <header className="topbar">
         <div className="dots">
-          {[...Array(8)].map((_, k) => (
+          {[...Array(10)].map((_, k) => (
             <b
               key={k}
               className={k === stage ? "on" : k < stage ? "done" : ""}
@@ -398,8 +489,55 @@ export default function App() {
       </header>
 
       <main>
+        {/* 0. ARE YOU READY (KAMMANIIII) */}
+        <section className={`stage ${stage === 0 ? "active" : ""}`} id="s-ready">
+          <div className="ready-floating-hearts" aria-hidden="true">
+            {[...Array(12)].map((_, i) => (
+              <span
+                key={i}
+                className="floating-purple-particle"
+                style={{
+                  left: `${6 + i * 8}%`,
+                  animationDelay: `${(i * 0.45) % 3.6}s`,
+                  animationDuration: `${3.6 + (i % 4) * 1.1}s`,
+                  fontSize: `${14 + (i % 3) * 6}px`
+                }}
+              >
+                💜
+              </span>
+            ))}
+          </div>
+
+          <div className="ready-card">
+            <div className="ready-heart-hero">
+              <div className="ready-heart-glow-ring"></div>
+              <div className="ready-heart-glow-ring delay"></div>
+              <div className="ready-heart-glow-ring delay2"></div>
+              <div className="ready-heart-badge">
+                <span className="ready-big-heart" role="img" aria-label="Purple Heart">💜</span>
+              </div>
+            </div>
+
+            <p className="ready-question">{wish.readyTitle || "are you ready"}</p>
+
+            <h1 className="ready-name script">
+              {wish.readyName || "kammaniiii"} <span className="inline-purple-heart">💜</span>
+            </h1>
+
+            <button
+              className="btn ready-btn"
+              onClick={handleReadyClick}
+              aria-label="Yes, I am ready"
+            >
+              <span>{wish.readyBtn || "Yes, I'm ready! 💜"}</span>
+            </button>
+
+            <p className="hint">Tap to unlock your surprise ✨</p>
+          </div>
+        </section>
+
         {/* 1. GIFT */}
-        <section className={`stage ${stage === 0 ? "active" : ""}`} id="s-gift">
+        <section className={`stage ${stage === 1 ? "active" : ""}`} id="s-gift">
           <p className="muted">{wish.intro}</p>
           <button
             className={`gift ${giftShaking ? "shake" : ""} ${giftOpen ? "open" : ""}`}
@@ -414,8 +552,106 @@ export default function App() {
           <p className="hint">Tap the gift 🎁</p>
         </section>
 
-        {/* 2. OUR STORY IN MEMORIES (15 Photos & Videos) */}
-        <section className={`stage ${stage === 1 ? "active" : ""}`} id="s-memories">
+        {/* 2. REALISTIC FLOWER BOUQUET STAGE (NEW REVEAL) */}
+        <section className={`stage ${stage === 2 ? "active" : ""}`} id="s-bouquet">
+          {/* Ambient Falling Flower Petals */}
+          <div className="bouquet-petals-field" aria-hidden="true">
+            {[...Array(14)].map((_, i) => (
+              <span
+                key={i}
+                className="floating-petal-particle"
+                style={{
+                  left: `${(i * 7.5) % 100}%`,
+                  animationDelay: `${(i * 0.38) % 4}s`,
+                  animationDuration: `${3.8 + (i % 3) * 1.4}s`,
+                  fontSize: `${15 + (i % 3) * 6}px`
+                }}
+              >
+                {["🌸", "🌹", "🌺", "✨", "🌷", "💜"][i % 6]}
+              </span>
+            ))}
+          </div>
+
+          <div className="bouquet-stage-header">
+            <span className="bouquet-pill-tag">💐 A Special Surprise For You</span>
+            <h2 className="script bouquet-title">{wish.bouquet?.title || "A Bouquet For You 💐"}</h2>
+            <p className="muted bouquet-subtitle">
+              {wish.bouquet?.subtitle || "Freshly bloomed with all my love for your special day"}
+            </p>
+          </div>
+
+          {/* Realistic 3D Flower Bouquet Showcase */}
+          <div className="bouquet-presentation-wrapper">
+            {/* Glowing Bloom Aura */}
+            <div className={`bouquet-glow-aura ${bouquetUnwrapped ? "blooming" : ""}`} />
+
+            {/* Fluttering Butterflies when unwrapped */}
+            {bouquetUnwrapped && (
+              <div className="bouquet-butterflies" aria-hidden="true">
+                <span className="butterfly b1">🦋</span>
+                <span className="butterfly b2">✨</span>
+                <span className="butterfly b3">🦋</span>
+              </div>
+            )}
+
+            <div
+              className={`bouquet-image-card ${bouquetUnwrapped ? "unwrapped" : ""} ${ribbonUntying ? "untying" : ""}`}
+              onClick={!bouquetUnwrapped ? handleUnwrapBouquet : undefined}
+            >
+              <img
+                src={wish.bouquet?.img || "/photos/bouquet.jpg"}
+                alt="Luxury Flower Bouquet"
+                className="bouquet-main-image"
+              />
+
+              {/* Shimmer overlay */}
+              <div className="bouquet-shimmer-effect" />
+
+              {/* Interactive Satin Ribbon & Bow */}
+              {!bouquetUnwrapped && (
+                <div className={`satin-ribbon-overlay ${ribbonUntying ? "slide-off" : ""}`}>
+                  <button
+                    className="satin-ribbon-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleUnwrapBouquet();
+                    }}
+                    aria-label="Tap ribbon to unwrap"
+                  >
+                    <span className="ribbon-bow-icon">🎀</span>
+                    <span className="ribbon-bow-text">Tap ribbon to unwrap</span>
+                  </button>
+                  <div className="ribbon-gold-band" />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Unwrapped Romantic Message Card */}
+          {bouquetUnwrapped ? (
+            <div className="bouquet-card-note">
+              <div className="bouquet-card-seal">🌸</div>
+              <p className="bouquet-card-text">
+                {wish.bouquet?.message ||
+                  "Like these flowers, may your year bloom with boundless joy, radiant smiles, and endless love. You make life so much more beautiful! 🌸✨"}
+              </p>
+              <span className="bouquet-card-signature script">
+                — {wish.bouquet?.from || wish.from || "Thujeeban"} 💛
+              </span>
+            </div>
+          ) : (
+            <p className="hint">Tap the golden ribbon to unwrap your bouquet 🎀</p>
+          )}
+
+          {bouquetUnwrapped && (
+            <button className="btn next bouquet-next-btn" onClick={() => goToStage(3)}>
+              {wish.bouquet?.btnText || "Step into our memories → 📸"}
+            </button>
+          )}
+        </section>
+
+        {/* 3. OUR STORY IN MEMORIES (15 Photos & Videos - COMPLETELY PRESERVED) */}
+        <section className={`stage ${stage === 3 ? "active" : ""}`} id="s-memories">
           <h2>Our Captured Memories 📸✨</h2>
           <p className="muted">Photos & videos from our journey. Tap any memory to view!</p>
           <div className="polaroid-wall">
@@ -429,7 +665,7 @@ export default function App() {
                 <div className="polaroid-img-box">
                   {m.type === "video" ? (
                     <>
-                      {stage === 1 ? (
+                      {stage === 3 ? (
                         <video
                           src={m.src}
                           autoPlay
@@ -454,13 +690,13 @@ export default function App() {
               </div>
             ))}
           </div>
-          <button className="btn next" onClick={() => goToStage(2)}>
+          <button className="btn next" onClick={() => goToStage(4)}>
             Today is all about you →
           </button>
         </section>
 
-        {/* 3. HERO (Title & Celebration) */}
-        <section className={`stage ${stage === 2 ? "active" : ""}`} id="s-hero">
+        {/* 4. HERO (Title & Celebration) */}
+        <section className={`stage ${stage === 4 ? "active" : ""}`} id="s-hero">
           <div className="stage-bg-cutout hero-cutout">
             <img src="/photos/img_32.PNG" alt="Thamil" loading="lazy" decoding="async" />
           </div>
@@ -473,13 +709,13 @@ export default function App() {
               <small>years of awesome</small>
             </div>
           )}
-          <button className="btn next" onClick={() => goToStage(3)}>
+          <button className="btn next" onClick={() => goToStage(5)}>
             Make a birthday wish →
           </button>
         </section>
 
-        {/* 4. CAKE & CANDLE CANDID UNLOCKS */}
-        <section className={`stage ${stage === 3 ? "active" : ""}`} id="s-cake">
+        {/* 5. CAKE & CANDLE CANDID UNLOCKS */}
+        <section className={`stage ${stage === 5 ? "active" : ""}`} id="s-cake">
           <div className="stage-bg-cutout cake-cutout">
             <img src="/photos/img_33.PNG" alt="" loading="lazy" decoding="async" />
           </div>
@@ -527,14 +763,14 @@ export default function App() {
               : `${extinguishedCandles.length} / ${CANDLE_COUNT} candles out`}
           </p>
           {extinguishedCandles.length === CANDLE_COUNT && (
-            <button className="btn next" onClick={() => goToStage(4)}>
+            <button className="btn next" onClick={() => goToStage(6)}>
               Pop some balloons →
             </button>
           )}
         </section>
 
-        {/* 5. BALLOONS WITH PHOTO WISHES */}
-        <section className={`stage ${stage === 4 ? "active" : ""}`} id="s-balloons">
+        {/* 6. BALLOONS WITH PHOTO WISHES */}
+        <section className={`stage ${stage === 6 ? "active" : ""}`} id="s-balloons">
           <h2>Pop for a wish 🎈</h2>
           <p className="muted">
             {poppedBalloons.length} / {wish.wishes.length} popped
@@ -559,44 +795,100 @@ export default function App() {
             })}
           </div>
 
-          {/* Large Interactive Balloon Reveal Dialog (Supports Cutouts & GIFs) */}
+          {/* Large Interactive Balloon Reveal Dialog (Shows Photo + Kiss GIF that appears & disappears) */}
           {activeBalloonWish && (
             <div className="balloon-reveal-overlay" onClick={() => setActiveBalloonWish(null)}>
               <div className="balloon-reveal-card" onClick={(e) => e.stopPropagation()}>
-                {activeBalloonWish.img && (
-                  <div
-                    className="balloon-cutout-wrap"
-                    onClick={() => openMediaModal(wish.wishes.map(w => ({ type: "image", src: w.img, title: "Birthday Wish 💫", text: w.text })), 0)}
-                  >
-                    <img
-                      src={activeBalloonWish.img}
-                      alt="Special Moment"
-                      className="balloon-cutout-img"
-                    />
-                  </div>
-                )}
+                {/* Photo showcase with kiss GIF overlay that appears and disappears */}
+                <div className="balloon-photo-showcase">
+                  {activeBalloonWish.img && (
+                    <div
+                      className="balloon-photo-frame"
+                      onClick={() =>
+                        openMediaModal(
+                          wish.wishes.map((w) => ({
+                            type: "image",
+                            src: w.img,
+                            title: "Birthday Wish 💫",
+                            text: w.text
+                          })),
+                          activeBalloonWish.index ?? 0
+                        )
+                      }
+                      title="Tap to enlarge memory"
+                    >
+                      <img
+                        src={activeBalloonWish.img}
+                        alt=""
+                        className="balloon-photo-backdrop-blur"
+                        aria-hidden="true"
+                      />
+                      <img
+                        src={activeBalloonWish.img}
+                        alt="Special Moment"
+                        className="balloon-photo-img"
+                      />
+                      <span className="balloon-photo-badge">📸 Tap to enlarge</span>
+                    </div>
+                  )}
+
+                  {/* Kiss GIF overlay: appears after photo shows up, plays kiss, then disappears */}
+                  {showKissGif && (
+                    <div
+                      className={`balloon-kiss-overlay ${kissGifFading ? "fade-out" : "fade-in"}`}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <div className="balloon-kiss-bubble">
+                        <div className="balloon-kiss-hearts-fx">
+                          <span>💖</span>
+                          <span>💋</span>
+                          <span>✨</span>
+                        </div>
+                        <img
+                          src={wish.balloonGif || "/photos/kiss.gif"}
+                          alt="Sending Kisses"
+                          className="balloon-kiss-gif-element"
+                        />
+                        <div className="balloon-kiss-title">Muah! 💋 Sending you kisses</div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <div className="balloon-reveal-text">
                   {activeBalloonWish.text}
                 </div>
-                <button
-                  className="balloon-reveal-btn"
-                  onClick={() => setActiveBalloonWish(null)}
-                >
-                  Pop another balloon 🎈
-                </button>
+
+                <div className="balloon-action-row">
+                  {!showKissGif && (
+                    <button
+                      className="btn-replay-kiss"
+                      onClick={triggerKiss}
+                      title="Watch the kiss animation again"
+                    >
+                      💋 Replay kiss
+                    </button>
+                  )}
+                  <button
+                    className="balloon-reveal-btn"
+                    onClick={() => setActiveBalloonWish(null)}
+                  >
+                    Pop another balloon 🎈
+                  </button>
+                </div>
               </div>
             </div>
           )}
 
           {poppedBalloons.length === wish.wishes.length && (
-            <button className="btn next" onClick={() => goToStage(5)}>
+            <button className="btn next" onClick={() => goToStage(7)}>
               Read your letter →
             </button>
           )}
         </section>
 
-        {/* 6. LOVE LETTER WITH SCRAPBOOK POLAROIDS */}
-        <section className={`stage ${stage === 5 ? "active" : ""}`} id="s-letter">
+        {/* 7. LOVE LETTER WITH SCRAPBOOK POLAROIDS */}
+        <section className={`stage ${stage === 7 ? "active" : ""}`} id="s-letter">
           <div className="stage-bg-cutout letter-cutout">
             <img src="/photos/remove1.png" alt="" loading="lazy" decoding="async" />
           </div>
@@ -622,18 +914,18 @@ export default function App() {
             </div>
           </div>
 
-          <button className="btn next" onClick={() => goToStage(6)}>
+          <button className="btn next" onClick={() => goToStage(8)}>
             One last surprise →
           </button>
         </section>
 
-        {/* 7. SCRATCH SURPRISE WITH VIDEO / PHOTO UNDERNEATH */}
-        <section className={`stage ${stage === 6 ? "active" : ""}`} id="s-scratch">
+        {/* 8. SCRATCH SURPRISE WITH VIDEO / PHOTO UNDERNEATH */}
+        <section className={`stage ${stage === 8 ? "active" : ""}`} id="s-scratch">
           <h2>Scratch to reveal 🎟️</h2>
           <div className="scratch">
             <div className="prize-media">
               {wish.surpriseMedia.type === "video" ? (
-                stage >= 6 ? (
+                stage >= 8 ? (
                   <video
                     src={wish.surpriseMedia.src}
                     poster={wish.surpriseMedia.poster}
@@ -667,14 +959,14 @@ export default function App() {
           )}
 
           {scratchRevealed && (
-            <button className="btn next" onClick={() => goToStage(7)}>
+            <button className="btn next" onClick={() => goToStage(9)}>
               Finish ✨
             </button>
           )}
         </section>
 
-        {/* 8. FINALE WITH FULL-SCREEN CUTOUT BACKGROUND */}
-        <section className={`stage ${stage === 7 ? "active" : ""}`} id="s-finale">
+        {/* 9. FINALE WITH FULL-SCREEN CUTOUT BACKGROUND */}
+        <section className={`stage ${stage === 9 ? "active" : ""}`} id="s-finale">
           {/* Full Screen Ambient Cutout Background */}
           <div className="stage-bg-cutout finale-bg-cover">
             {(wish.finaleCutouts || wish.finaleStream).map((src, idx) => (
